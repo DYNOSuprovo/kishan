@@ -1,0 +1,17 @@
+# Git
+.git
+.gitignore
+
+# Data and scripts
+data/
+scripts/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS-specific
+.DS_Store
+Thumbs.db

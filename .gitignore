@@ -1,0 +1,216 @@
+# ============================================
+# WHEAT ANALYSIS APP - COMPREHENSIVE .GITIGNORE
+# ============================================
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+*.so
+
+# ============================================
+# VIRTUAL ENVIRONMENTS
+# ============================================
+venv/
+.venv/
+ENV/
+env/
+Lib/
+Include/
+share/
+libs/
+Scripts/
+pyvenv.cfg
+
+# ============================================
+# PACKAGE/BUILD DIRECTORIES  
+# ============================================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ============================================
+# JUPYTER NOTEBOOKS
+# ============================================
+.ipynb_checkpoints/
+
+# ============================================
+# IDE & EDITOR FILES
+# ============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ============================================
+# LARGE DATA FILES (DO NOT UPLOAD)
+# ============================================
+data/
+temp_data/
+processed_data/
+
+# ============================================
+# MODEL FILES (TOO LARGE FOR GITHUB)
+# Note: Models should be hosted on HuggingFace
+# ============================================
+*.h5
+*.keras
+*.pkl
+*.pickle
+*.hdf5
+*.pb
+*.onnx
+*.tflite
+*.pt
+*.pth
+src/models/*.keras
+src/models/*.h5
+
+# ============================================
+# ML EXPERIMENT TRACKING
+# ============================================
+mlruns/
+mlartifacts/
+.mlflow/
+wandb/
+runs/
+results/
+checkpoints/
+
+# ============================================
+# ARCHIVES
+# ============================================
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ============================================
+# TEST & TEMPORARY FILES
+# ============================================
+*.log
+*.tmp
+*.bak
+test_image.jpg
+dummy_debug.jpg
+*.cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Output & log files
+output*.txt
+error.txt
+server_*.txt
+test_*.txt
+*_output.txt
+evaluation_results.txt
+model_info.txt
+model_summary.txt
+
+# Test images in root
+images*.jpg
+images*.webp
+*.avif
+Wheat_stem_rust_best_2.jpg
+Leaf*wheat*.jpg
+brown-rust-leaf-disease*.webp
+loose-smut*.webp
+Symptoms-of-Loose-smut*.png
+W-01904*.avif
+
+# ============================================
+# NODE.JS (for web frontend)
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+src/web/dist/
+src/web/build/
+
+# Environment files (can contain secrets)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel/
+
+# ============================================
+# EXECUTABLES IN SCRIPTS (from venv)
+# ============================================
+scripts/*.exe
+scripts/range-detector
+
+# ============================================
+# OS GENERATED FILES
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============================================
+# DOCKER
+# ============================================
+*.log
+docker-compose*.override.yml
+
+# ============================================
+# HUGGINGFACE DEPLOYMENT (separate repo)
+# ============================================
+deploy_hf/
+
+# ============================================
+# MISCELLANEOUS DEBUG/TEMP SCRIPTS
+# ============================================
+check_root.py
+check_root_refined.py
+confirm_architecture.py
+create_dummy_image.py
+debug_remote_api.py
+evaluate_model.py
+extract.py
+inspect_model.py
+run_tests.py
+run_tests_visual.py
+test_detection.py
+test_env.py
+test_user_images.py
+verify_fix.py
+
+# PowerShell scripts (for local testing)
+*.ps1

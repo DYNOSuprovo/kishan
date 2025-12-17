@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cyber-green: #00ff9d;
+  --color-cyber-black: #0a0a0a;
+  --color-glass-white: rgba(255, 255, 255, 0.1);
+  --font-sans: 'Inter', sans-serif;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@layer base {
+  body {
+    @apply bg-cyber-black text-white antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-glass-white backdrop-blur-md border border-white/10 shadow-xl rounded-2xl;
+  }
+
+  .cyber-gradient {
+    background: linear-gradient(135deg, #00ff9d 0%, #00b8ff 100%);
+  }
+}
