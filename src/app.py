@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
+from flask_cors import CORS
 from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
@@ -10,6 +11,7 @@ import json
 import time
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for mobile app
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # Secret key for flash messages
 
 # Define allowed extensions for image uploads
@@ -50,14 +52,12 @@ def predict():
     Handles image uploads, preprocesses the image, makes a prediction using the
     classification model, and displays the result.
     """
-    # Check if a file was part of the request
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
     
     file = request.files['file']
     
-    # Check if a file was selected
     if file.filename == '':
         flash('No selected file')
         return redirect(request.url)
@@ -101,6 +101,41 @@ def predict():
         # Flash an error message for invalid file types and redirect to the index page
         flash('Invalid file type. Please upload an image (png, jpg, jpeg).')
         return redirect(url_for('index'))
+
+@app.route('/api/predict', methods=['POST'])
+def api_predict():
+    """
+    JSON API endpoint for mobile app predictions.
+    Returns: JSON with label and confidence
+    """
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    if file and allowed_file(file.filename):
+        img = Image.open(io.BytesIO(file.read()))
+        img_np = np.array(img)
+        
+        # Preprocess image for classification model
+        img_resized = cv2.resize(img_np, (300, 300))
+        img_reshaped = np.reshape(img_resized, (1, 300, 300, 3))
+        
+        # Run prediction
+        prediction = classification_model.predict(img_reshaped)
+        label_index = np.argmax(prediction)
+        label = CLASSIFICATION_LABELS[label_index]
+        confidence = float(prediction[0][label_index])
+        
+        return jsonify({
+            'label': label,
+            'confidence': confidence
+        })
+    else:
+        return jsonify({'error': 'Invalid file type'}), 400
 
 def cleanup_old_images(folder='static', age_seconds=3600):
     """
