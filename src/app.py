@@ -21,10 +21,34 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'labels.json'), 'r') as f:
     CLASSIFICATION_LABELS = json.load(f)
 
-# Get the absolute path to the classification model
-model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/classification_model.keras')
+# Function to get model - tries local first, then downloads from HuggingFace
+def get_model():
+    local_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/classification_model.keras')
+    
+    # Try local model first
+    if os.path.exists(local_model_path):
+        print(f"Loading model from local path: {local_model_path}")
+        return load_model(local_model_path)
+    
+    # Download from HuggingFace Hub
+    try:
+        from huggingface_hub import hf_hub_download
+        print("Local model not found. Downloading from HuggingFace Hub...")
+        
+        # Download model from HF Space
+        model_path = hf_hub_download(
+            repo_id="Dyno1307/wheat-analysis-api",  
+            filename="src/models/flagship_model.keras",
+            repo_type="space"
+        )
+        print(f"Model downloaded to: {model_path}")
+        return load_model(model_path)
+    except Exception as e:
+        print(f"Error downloading model: {e}")
+        raise RuntimeError(f"Could not load model. Local: {local_model_path}, HF Error: {e}")
+
 # Load the pre-trained classification model
-classification_model = load_model(model_path)
+classification_model = get_model()
 
 def allowed_file(filename):
     """

@@ -2,6 +2,7 @@
 flask>=2.3.0
 flask-cors>=4.0.0
 gunicorn>=21.0.0
+huggingface_hub>=0.19.0
 
 # TensorFlow for ML Model
 tensorflow-cpu>=2.15.0
