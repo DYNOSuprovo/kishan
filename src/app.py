@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from flask_cors import CORS
-from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
 import io
 import cv2
 import os
-import tensorflow as tf
 import json
 import time
 
@@ -21,20 +19,35 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'labels.json'), 'r') as f:
     CLASSIFICATION_LABELS = json.load(f)
 
-# Function to get model - tries local first, then downloads from HuggingFace
+# Global variable for lazy-loaded model
+_classification_model = None
+
 def get_model():
+    """Lazy load model - only loads when first prediction is requested"""
+    global _classification_model
+    
+    if _classification_model is not None:
+        return _classification_model
+    
+    print("Loading model for the first time...")
+    
+    # Import TensorFlow only when needed (saves startup memory)
+    from tensorflow.keras.models import load_model
+    
     local_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/classification_model.keras')
     cache_model_path = '/tmp/classification_model.keras'
     
     # Try local model first
     if os.path.exists(local_model_path):
         print(f"Loading model from local path: {local_model_path}")
-        return load_model(local_model_path)
+        _classification_model = load_model(local_model_path)
+        return _classification_model
     
     # Try cached model
     if os.path.exists(cache_model_path):
         print(f"Loading model from cache: {cache_model_path}")
-        return load_model(cache_model_path)
+        _classification_model = load_model(cache_model_path)
+        return _classification_model
     
     # Download from HuggingFace Space via direct URL
     try:
@@ -54,25 +67,15 @@ def get_model():
                 f.write(chunk)
         
         print(f"Model downloaded to: {cache_model_path}")
-        return load_model(cache_model_path)
+        _classification_model = load_model(cache_model_path)
+        return _classification_model
     except Exception as e:
-        print(f"Error downloading model: {e}")
-        # Create a dummy model for health checks (will fail on predict but app starts)
-        print("WARNING: Could not load model. API will return errors on prediction requests.")
-        return None
-
-# Load the pre-trained classification model
-classification_model = get_model()
+        print(f"Error downloading/loading model: {e}")
+        raise RuntimeError(f"Could not load model: {e}")
 
 def allowed_file(filename):
     """
     Checks if a given filename has an allowed image extension.
-
-    Args:
-        filename (str): The name of the file.
-
-    Returns:
-        bool: True if the file extension is allowed, False otherwise.
     """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -83,6 +86,11 @@ def index():
     Renders the main index page of the web application.
     """
     return render_template('index.html')
+
+@app.route('/health')
+def health():
+    """Health check endpoint for Render"""
+    return jsonify({'status': 'healthy', 'model_loaded': _classification_model is not None})
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -102,6 +110,9 @@ def predict():
     
     # Process the file if it exists and is allowed
     if file and allowed_file(file.filename):
+        # Get model (lazy load)
+        model = get_model()
+        
         # Read the image file into a BytesIO object
         img = Image.open(io.BytesIO(file.read()))
         img_np = np.array(img)
@@ -118,7 +129,7 @@ def predict():
         img_preprocessed = img_reshaped_classification
 
         # Run the classification model to get predictions
-        prediction = classification_model.predict(img_preprocessed)
+        prediction = model.predict(img_preprocessed)
         label_index = np.argmax(prediction)  # Get the index of the highest probability class
         label = CLASSIFICATION_LABELS[label_index]  # Get the corresponding label string
 
@@ -155,23 +166,29 @@ def api_predict():
         return jsonify({'error': 'No file selected'}), 400
     
     if file and allowed_file(file.filename):
-        img = Image.open(io.BytesIO(file.read()))
-        img_np = np.array(img)
-        
-        # Preprocess image for classification model
-        img_resized = cv2.resize(img_np, (300, 300))
-        img_reshaped = np.reshape(img_resized, (1, 300, 300, 3))
-        
-        # Run prediction
-        prediction = classification_model.predict(img_reshaped)
-        label_index = np.argmax(prediction)
-        label = CLASSIFICATION_LABELS[label_index]
-        confidence = float(prediction[0][label_index])
-        
-        return jsonify({
-            'label': label,
-            'confidence': confidence
-        })
+        try:
+            # Get model (lazy load)
+            model = get_model()
+            
+            img = Image.open(io.BytesIO(file.read()))
+            img_np = np.array(img)
+            
+            # Preprocess image for classification model
+            img_resized = cv2.resize(img_np, (300, 300))
+            img_reshaped = np.reshape(img_resized, (1, 300, 300, 3))
+            
+            # Run prediction
+            prediction = model.predict(img_reshaped)
+            label_index = np.argmax(prediction)
+            label = CLASSIFICATION_LABELS[label_index]
+            confidence = float(prediction[0][label_index])
+            
+            return jsonify({
+                'label': label,
+                'confidence': confidence
+            })
+        except Exception as e:
+            return jsonify({'error': f'Prediction failed: {str(e)}'}), 500
     else:
         return jsonify({'error': 'Invalid file type'}), 400
 
