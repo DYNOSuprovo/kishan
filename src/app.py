@@ -83,9 +83,20 @@ def allowed_file(filename):
 @app.route('/')
 def index():
     """
-    Renders the main index page of the web application.
+    API root - returns API information and available endpoints.
     """
-    return render_template('index.html')
+    return jsonify({
+        'name': 'WheatGuard API',
+        'version': '1.0.0',
+        'description': 'Wheat Disease Detection API',
+        'endpoints': {
+            '/': 'API info (this page)',
+            '/health': 'Health check',
+            '/api/predict': 'POST - Upload image for prediction'
+        },
+        'status': 'ready',
+        'model_loaded': _classification_model is not None
+    })
 
 @app.route('/health')
 def health():
