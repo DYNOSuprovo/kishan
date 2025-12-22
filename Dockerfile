@@ -1,5 +1,5 @@
 # Use Python 3.10
-FROM python:3.10
+FROM python:3.10-slim
 
 # Set working directory to /code
 WORKDIR /code
@@ -15,7 +15,13 @@ COPY ./src /code/src
 
 # Create a writable directory for caching/temp files if needed
 RUN mkdir -p /code/temp && chmod 777 /code/temp
+RUN mkdir -p /tmp && chmod 777 /tmp
 
-# Set the command to run the application
-# Note: HF Spaces expects the app to run on port 7860
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
+# Expose port
+EXPOSE 8000
+
+# Set environment variable
+ENV PORT=8000
+
+# Run the Flask application with gunicorn
+CMD ["gunicorn", "src.app:app", "--bind", "0.0.0.0:8000", "--timeout", "120"]
