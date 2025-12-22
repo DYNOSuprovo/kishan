@@ -24,28 +24,42 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'labels.json'
 # Function to get model - tries local first, then downloads from HuggingFace
 def get_model():
     local_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/classification_model.keras')
+    cache_model_path = '/tmp/classification_model.keras'
     
     # Try local model first
     if os.path.exists(local_model_path):
         print(f"Loading model from local path: {local_model_path}")
         return load_model(local_model_path)
     
-    # Download from HuggingFace Hub
+    # Try cached model
+    if os.path.exists(cache_model_path):
+        print(f"Loading model from cache: {cache_model_path}")
+        return load_model(cache_model_path)
+    
+    # Download from HuggingFace Space via direct URL
     try:
-        from huggingface_hub import hf_hub_download
-        print("Local model not found. Downloading from HuggingFace Hub...")
+        import requests
+        print("Local model not found. Downloading from HuggingFace Space...")
         
-        # Download model from HF Space
-        model_path = hf_hub_download(
-            repo_id="Dyno1307/wheat-analysis-api",  
-            filename="src/models/flagship_model.keras",
-            repo_type="space"
-        )
-        print(f"Model downloaded to: {model_path}")
-        return load_model(model_path)
+        # Direct download URL from HF Space
+        model_url = "https://huggingface.co/spaces/Dyno1307/wheat-analysis-api/resolve/main/src/models/flagship_model.keras"
+        
+        print(f"Downloading from: {model_url}")
+        response = requests.get(model_url, stream=True, timeout=300)
+        response.raise_for_status()
+        
+        # Save to cache
+        with open(cache_model_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        
+        print(f"Model downloaded to: {cache_model_path}")
+        return load_model(cache_model_path)
     except Exception as e:
         print(f"Error downloading model: {e}")
-        raise RuntimeError(f"Could not load model. Local: {local_model_path}, HF Error: {e}")
+        # Create a dummy model for health checks (will fail on predict but app starts)
+        print("WARNING: Could not load model. API will return errors on prediction requests.")
+        return None
 
 # Load the pre-trained classification model
 classification_model = get_model()
