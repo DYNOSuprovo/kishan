@@ -87,6 +87,9 @@ processed_data/
 src/models/*.keras
 src/models/*.h5
 
+# EXCEPTION: Allow flagship model (approx 40MB, safe for GitHub)
+!src/models/flagship_model.keras
+
 # ============================================
 # ML EXPERIMENT TRACKING
 # ============================================

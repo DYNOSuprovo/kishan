@@ -34,44 +34,24 @@ def get_model():
     # Import TensorFlow only when needed (saves startup memory)
     from tensorflow.keras.models import load_model
     
-    local_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/classification_model.keras')
-    cache_model_path = '/tmp/classification_model.keras'
+    # Path to the model is absolute to ensuring finding it
+    local_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/flagship_model.keras')
     
-    # Try local model first
+    print(f"Loading model from: {local_model_path}")
+    
     if os.path.exists(local_model_path):
-        print(f"Loading model from local path: {local_model_path}")
-        _classification_model = load_model(local_model_path)
-        return _classification_model
-    
-    # Try cached model
-    if os.path.exists(cache_model_path):
-        print(f"Loading model from cache: {cache_model_path}")
-        _classification_model = load_model(cache_model_path)
-        return _classification_model
-    
-    # Download from HuggingFace Space via direct URL
-    try:
-        import requests
-        print("Local model not found. Downloading from HuggingFace Space...")
-        
-        # Direct download URL from HF Space
-        model_url = "https://huggingface.co/spaces/Dyno1307/wheat-analysis-api/resolve/main/src/models/flagship_model.keras"
-        
-        print(f"Downloading from: {model_url}")
-        response = requests.get(model_url, stream=True, timeout=300)
-        response.raise_for_status()
-        
-        # Save to cache
-        with open(cache_model_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-        
-        print(f"Model downloaded to: {cache_model_path}")
-        _classification_model = load_model(cache_model_path)
-        return _classification_model
-    except Exception as e:
-        print(f"Error downloading/loading model: {e}")
-        raise RuntimeError(f"Could not load model: {e}")
+        try:
+            _classification_model = load_model(local_model_path)
+            print("Model loaded successfully!")
+            return _classification_model
+        except Exception as e:
+            print(f"Error loading model: {e}")
+            raise RuntimeError(f"Failed to load model from {local_model_path}: {e}")
+    else:
+        print(f"ERROR: Model file not found at {local_model_path}")
+        # As a fallback, we could try downloading, but for now we expect the file to be present
+        # via git since we're pushing it.
+        raise FileNotFoundError(f"Model file missing: {local_model_path}")
 
 def allowed_file(filename):
     """
