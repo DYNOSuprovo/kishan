@@ -23,9 +23,7 @@ function App() {
     try {
       // Point to Backend (Env var for Prod, localhost for Dev)
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const response = await axios.post(`${API_URL}/predict`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const response = await axios.post(`${API_URL}/api/predict`, formData);
       setPrediction(response.data);
     } catch (err) {
       setError("Analysis failed. Please try again.");
