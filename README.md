@@ -11,7 +11,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
 
 [![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-Spaces-yellow?style=for-the-badge)](https://huggingface.co/spaces)
-[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://wheat-analysis-app.vercel.app)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 <img src="https://raw.githubusercontent.com/tensorflow/tensorflow/master/tensorflow/cc/saved_model/image_classifier/testdata/beach.jpg" alt="Wheat Field" width="600" style="border-radius: 15px; margin: 20px 0;"/>
@@ -504,8 +504,8 @@ CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
 
 | Service | URL | Status |
 |---------|-----|--------|
-| **API Backend** | `https://kishan-5iwz.onrender.com` | 🟢 Live |
-| **Web Frontend** | `https://wheat-analysis-app.vercel.app` | 🟢 Live |
+| **API Backend** | [kishan-5iwz.onrender.com](https://kishan-5iwz.onrender.com) | 🟢 Live |
+| **Web Frontend** | [wheat-analysis-app.vercel.app](https://wheat-analysis-app.vercel.app) | 🟢 Live |
 
 ---
 
