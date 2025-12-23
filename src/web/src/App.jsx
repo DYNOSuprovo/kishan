@@ -113,10 +113,10 @@ function App() {
                   <div className="p-6 border-b border-white/10 bg-white/5">
                     <h2 className="text-sm font-mono text-white/50 uppercase mb-1">Diagnosis</h2>
                     <div className="flex items-center gap-3">
-                      <h3 className="text-3xl font-bold text-white">{prediction.prediction}</h3>
-                      {prediction.prediction === 'Healthy Wheat' ? (
+                      <h3 className="text-3xl font-bold text-white">{prediction.label}</h3>
+                      {prediction.label === 'Healthy Wheat' ? (
                         <CheckCircle className="text-green-500 w-8 h-8" />
-                      ) : prediction.prediction.startsWith('Unknown') ? (
+                      ) : prediction.label.startsWith('Unknown') ? (
                         <Activity className="text-yellow-500 w-8 h-8" />
                       ) : (
                         <AlertCircle className="text-red-500 w-8 h-8" />
@@ -134,7 +134,7 @@ function App() {
                     )}
                     <div className="flex justify-between items-end mb-2">
                       <span className="text-white/60">Confidence Score</span>
-                      <span className={`text-2xl font-mono ${prediction.prediction.startsWith('Unknown') ? 'text-yellow-500' : 'text-cyber-green'}`}>{(prediction.confidence * 100).toFixed(1)}%</span>
+                      <span className={`text-2xl font-mono ${prediction.label.startsWith('Unknown') ? 'text-yellow-500' : 'text-cyber-green'}`}>{(prediction.confidence * 100).toFixed(1)}%</span>
                     </div>
                     {/* Confidence Bar */}
                     <div className="h-4 bg-black/50 rounded-full overflow-hidden border border-white/10 relative">
@@ -142,12 +142,12 @@ function App() {
                         initial={{ width: 0 }}
                         animate={{ width: `${prediction.confidence * 100}%` }}
                         transition={{ duration: 1, ease: "circOut" }}
-                        className={`h-full shadow-[0_0_20px_rgba(0,255,157,0.5)] ${prediction.prediction.startsWith('Unknown') ? 'bg-yellow-500' : 'bg-gradient-to-r from-cyber-green to-blue-500'}`}
+                        className={`h-full shadow-[0_0_20px_rgba(0,255,157,0.5)] ${prediction.label.startsWith('Unknown') ? 'bg-yellow-500' : 'bg-gradient-to-r from-cyber-green to-blue-500'}`}
                       />
                     </div>
 
                     <div className="pt-4 border-t border-white/10 mt-6 grid grid-cols-2 gap-2 text-xs font-mono text-white/40">
-                      {Object.entries(prediction.scores).map(([key, val]) => (
+                      {prediction.scores && Object.entries(prediction.scores).map(([key, val]) => (
                         <div key={key} className="flex justify-between">
                           <span>{key.split(' ').pop()}</span>
                           <span>{(val * 100).toFixed(1)}%</span>
