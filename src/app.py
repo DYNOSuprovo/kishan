@@ -111,9 +111,9 @@ def predict():
         # Convert RGB image to BGR for OpenCV compatibility (if needed for other operations)
         img_bgr = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
 
-        # Preprocess the image for the classification model (Expected input: 300x300 for EfficientNetV2B3)
-        img_resized_classification = cv2.resize(img_np, (300, 300))  # Resize to model's expected input
-        img_reshaped_classification = np.reshape(img_resized_classification, (1, 300, 300, 3)) # Reshape for model input
+        # Preprocess the image for the classification model (Expected input: 260x260 for loaded model)
+        img_resized_classification = cv2.resize(img_np, (260, 260))  # Resize to model's expected input
+        img_reshaped_classification = np.reshape(img_resized_classification, (1, 260, 260, 3)) # Reshape for model input
         
         # EfficientNetV2B3 handles normalization internally (expects 0-255 inputs)
         # So we just pass the resized image directly
@@ -164,9 +164,9 @@ def api_predict():
             img = Image.open(io.BytesIO(file.read()))
             img_np = np.array(img)
             
-            # Preprocess image for classification model
-            img_resized = cv2.resize(img_np, (300, 300))
-            img_reshaped = np.reshape(img_resized, (1, 300, 300, 3))
+            # Preprocess image for classification model (loaded model expects 260x260)
+            img_resized = cv2.resize(img_np, (260, 260))
+            img_reshaped = np.reshape(img_resized, (1, 260, 260, 3))
             
             # Run prediction
             prediction = model.predict(img_reshaped)
