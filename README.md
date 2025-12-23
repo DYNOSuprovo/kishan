@@ -504,8 +504,8 @@ CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "7860"]
 
 | Service | URL | Status |
 |---------|-----|--------|
-| **API Backend** | `https://your-hf-space.hf.space` | 🟢 Live |
-| **Web Frontend** | `https://your-vercel-app.vercel.app` | 🟢 Live |
+| **API Backend** | `https://kishan-5iwz.onrender.com` | 🟢 Live |
+| **Web Frontend** | `https://wheat-analysis-app.vercel.app` | 🟢 Live |
 
 ---
 
